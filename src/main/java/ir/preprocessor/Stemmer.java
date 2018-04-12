@@ -1,4 +1,5 @@
-package ir.stemmer;
+package ir.preprocessor;
 
 public class Stemmer {
+
 }

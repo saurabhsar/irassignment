@@ -14,7 +14,7 @@ public class IndexCreator {
 
     public static Map<String, Store> documentMap = new HashMap<String, Store>();
 
-    public static void createDocumentMap(String[] listOfStrings, String documentId) {
+    public static Map<String, Store> createDocumentMap(String[] listOfStrings, String documentId) {
         int counter = 0;
         for (String str : listOfStrings) {
 
@@ -42,6 +42,8 @@ public class IndexCreator {
                 documentMap.put(str, store);
             }
         }
+
+        return documentMap;
     }
 
     public static SearchResults getData(String str) {
