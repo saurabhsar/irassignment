@@ -4,6 +4,7 @@ import ir.file.Parser;
 import ir.model.DocInfo;
 import ir.model.SearchResults;
 import ir.model.Store;
+import ir.preprocessor.Stemmer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,9 +23,11 @@ public class IndexCreator {
             docInfo.construct(documentId, counter);
             counter++;
 
-            if(documentMap.containsKey(str)) {
+            String stemmedStr = Stemmer.stem(str);
+
+            if(documentMap.containsKey(stemmedStr)) {
                 boolean flag = false;
-                for (DocInfo docInfo1 : documentMap.get(str).getDocInfos()){
+                for (DocInfo docInfo1 : documentMap.get(stemmedStr).getDocInfos()){
                     if (docInfo1.getDocId().equals(documentId)) {
                         docInfo1.getPositions().add(counter);
                         flag = true;
@@ -32,14 +35,14 @@ public class IndexCreator {
                     }
                 }
                 if (!flag) {
-                    documentMap.get(str).getDocInfos().add(docInfo);
+                    documentMap.get(stemmedStr).getDocInfos().add(docInfo);
                 }
             } else {
                 Store store = new Store();
-                store.setId(str);
+                store.setId(stemmedStr);
                 store.getDocInfos().add(docInfo);
 
-                documentMap.put(str, store);
+                documentMap.put(stemmedStr, store);
             }
         }
 

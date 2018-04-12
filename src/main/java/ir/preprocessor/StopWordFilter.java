@@ -8,13 +8,13 @@ import java.util.Set;
 
 public class StopWordFilter {
 
-    private static Set<String> stopWords;
-
     public static void filterStopWords(Map<String, Store> documentMap) {
-        stopWords = Config.getInstance().getStopWords();
+        Set<String> stopWords = Config.getInstance().getStopWords();
 
-        for (String word : stopWords) {
-            documentMap.remove(word);
+        if (Config.getInstance().isStopWordFilterEnabled()) {
+            for (String word : stopWords) {
+                documentMap.remove(word);
+            }
         }
     }
 }

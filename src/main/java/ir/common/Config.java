@@ -1,8 +1,9 @@
 package ir.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.type.TypeReference;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,11 +13,16 @@ import java.util.Set;
 import static ir.common.Constants.directoryName;
 import static ir.common.Constants.config;
 
-@Data
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Config {
 
     //List taken from https://www.ranks.nl/stopwords
-    public Set<String> stopWords;
+    private Set<String> stopWords;
+    private boolean stopWordFilterEnabled;
+    private boolean stemmerEnabled;
+    private String resourcesDirectoryName;
 
     @JsonIgnore
     private static Config object;

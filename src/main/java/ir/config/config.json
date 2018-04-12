@@ -174,5 +174,8 @@
     "yourselves",
     "yours",
     "yourself"
-  ]
+  ],
+  "stopWordFilterEnabled": true,
+  "stemmerEnabled": true,
+  "resourcesDirectoryName": "src/main/java/ir/resources/"
 }

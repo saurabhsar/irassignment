@@ -1,6 +1,7 @@
 package ir.assignment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import ir.common.Config;
 import ir.common.ObjectMapperFacade;
 import ir.file.Parser;
 import ir.indexer.IndexCreator;
@@ -8,9 +9,6 @@ import ir.preprocessor.StopWordFilter;
 
 import java.io.File;
 import java.util.Objects;
-
-import static ir.common.Constants.directoryName;
-import static ir.common.Constants.resources;
 
 /**
  * Hello world!
@@ -21,7 +19,7 @@ public class App
     public static void main( String[] args )
     {
 
-        File directory = new File(directoryName + resources);
+        File directory = new File(Config.getInstance().getResourcesDirectoryName());
 
         for (File file : Objects.requireNonNull(directory.listFiles())){
             if (file.isFile()){
@@ -29,7 +27,7 @@ public class App
                 StopWordFilter.filterStopWords(
                     IndexCreator.createDocumentMap(
                             Parser.tokenize(
-                                    Parser.readDocxFile(directoryName + resources + file.getName()),
+                                    Parser.readDocxFile(Config.getInstance().getResourcesDirectoryName() + file.getName()),
                                     " "), (String) file.getName().subSequence(0, file.getName().length() -5 )));
             }
         }
@@ -39,6 +37,5 @@ public class App
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
     }
 }
