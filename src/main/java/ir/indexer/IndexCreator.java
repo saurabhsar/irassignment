@@ -1,19 +1,14 @@
 package ir.indexer;
 
-import ir.file.Parser;
 import ir.model.DocInfo;
-import ir.model.SearchResults;
 import ir.model.Store;
 import ir.preprocessor.Stemmer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class IndexCreator {
+import static ir.indexer.Index.documentMap;
 
-    public static Map<String, Store> documentMap = new HashMap<String, Store>();
+public class IndexCreator {
 
     public static Map<String, Store> createDocumentMap(String[] listOfStrings, String documentId) {
         int counter = 0;
@@ -47,21 +42,5 @@ public class IndexCreator {
         }
 
         return documentMap;
-    }
-
-    public static SearchResults getData(String str) {
-
-        List<Store> stores = new ArrayList<Store>();
-        List<String> ignoredWords = new ArrayList<String>();
-
-        String[] tokens = Parser.tokenize(str, " ");
-        for (String token : tokens) {
-            if (!documentMap.containsKey(token)) {
-                ignoredWords.add(token);
-            }
-            stores.add(documentMap.get(token));
-        }
-
-        return new SearchResults(stores, ignoredWords);
     }
 }

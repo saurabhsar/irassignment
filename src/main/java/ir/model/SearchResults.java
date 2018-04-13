@@ -3,11 +3,11 @@ package ir.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 public class SearchResults {
-    List<Store> storeList;
-    List<String> ignoredWords;
+    Set<Store> storeList;
+    Set<String> ignoredWords;
 }

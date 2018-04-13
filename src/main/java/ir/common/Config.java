@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Set;
 
 import static ir.common.Constants.directoryName;
@@ -23,6 +24,9 @@ public class Config {
     private boolean stopWordFilterEnabled;
     private boolean stemmerEnabled;
     private String resourcesDirectoryName;
+
+    @JsonIgnore
+    private Set<String> stemmedStopWords = new HashSet<>();
 
     @JsonIgnore
     private static Config object;
