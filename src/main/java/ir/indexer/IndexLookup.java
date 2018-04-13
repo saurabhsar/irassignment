@@ -22,7 +22,7 @@ public class IndexLookup {
         Set<Store> stores = new HashSet<>();
         Set<String> ignoredWords = new HashSet<>();
 
-        String[] tokens = Parser.tokenize(str, " ");
+        String[] tokens = Parser.tokenize(str, WHITESPACE);
 
         for (String token : tokens) {
 
@@ -51,7 +51,7 @@ public class IndexLookup {
         if (!searchResults.getIgnoredWords().isEmpty()) {
             stringBuilder.append("Ignored Words :");
             addWhitespace(stringBuilder);
-            searchResults.getIgnoredWords().forEach(str -> stringBuilder.append(str).append(" "));
+            searchResults.getIgnoredWords().forEach(str -> stringBuilder.append(str).append(WHITESPACE));
             addNewLine(stringBuilder);
         }
 
@@ -118,7 +118,7 @@ public class IndexLookup {
     }
 
     private static void addWhitespace(StringBuilder stringBuilder) {
-        stringBuilder.append(" ");
+        stringBuilder.append(WHITESPACE);
     }
 
     private static void addComma(StringBuilder stringBuilder) {
