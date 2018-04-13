@@ -1,20 +1,16 @@
 package ir.indexer;
 
-import ir.file.Parser;
 import ir.model.DocInfo;
-import ir.model.SearchResults;
 import ir.model.Store;
+import ir.preprocessor.Stemmer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static ir.indexer.Index.documentMap;
 
 public class IndexCreator {
 
-    public static Map<String, Store> documentMap = new HashMap<String, Store>();
-
-    public static void createDocumentMap(String[] listOfStrings, String documentId) {
+    public static Map<String, Store> createDocumentMap(String[] listOfStrings, String documentId) {
         int counter = 0;
         for (String str : listOfStrings) {
 
@@ -22,9 +18,11 @@ public class IndexCreator {
             docInfo.construct(documentId, counter);
             counter++;
 
-            if(documentMap.containsKey(str)) {
+            String stemmedStr = Stemmer.stem(str);
+
+            if(documentMap.containsKey(stemmedStr)) {
                 boolean flag = false;
-                for (DocInfo docInfo1 : documentMap.get(str).getDocInfos()){
+                for (DocInfo docInfo1 : documentMap.get(stemmedStr).getDocInfos()){
                     if (docInfo1.getDocId().equals(documentId)) {
                         docInfo1.getPositions().add(counter);
                         flag = true;
@@ -32,31 +30,17 @@ public class IndexCreator {
                     }
                 }
                 if (!flag) {
-                    documentMap.get(str).getDocInfos().add(docInfo);
+                    documentMap.get(stemmedStr).getDocInfos().add(docInfo);
                 }
             } else {
                 Store store = new Store();
-                store.setId(str);
+                store.setId(stemmedStr);
                 store.getDocInfos().add(docInfo);
 
-                documentMap.put(str, store);
+                documentMap.put(stemmedStr, store);
             }
         }
-    }
 
-    public static SearchResults getData(String str) {
-
-        List<Store> stores = new ArrayList<Store>();
-        List<String> ignoredWords = new ArrayList<String>();
-
-        String[] tokens = Parser.tokenize(str, " ");
-        for (String token : tokens) {
-            if (!documentMap.containsKey(token)) {
-                ignoredWords.add(token);
-            }
-            stores.add(documentMap.get(token));
-        }
-
-        return new SearchResults(stores, ignoredWords);
+        return documentMap;
     }
 }

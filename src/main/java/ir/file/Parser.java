@@ -38,11 +38,4 @@ public class Parser {
 
         return output;
     }
-
-
-    public static void test() {
-        System.out.println(Arrays.toString(tokenize(readDocxFile("src/main/java/ir/resources/Doc1.docx"), " ")));
-        System.out.println(Arrays.toString(tokenize(readDocxFile("src/main/java/ir/resources/Doc2.docx"), " ")));
-
-    }
 }
