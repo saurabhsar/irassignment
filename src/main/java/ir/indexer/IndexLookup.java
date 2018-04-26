@@ -48,13 +48,44 @@ public class IndexLookup {
     public static String parseSearchResults(SearchResults searchResults) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (!searchResults.getIgnoredWords().isEmpty()) {
-            stringBuilder.append("Ignored Words :");
-            addWhitespace(stringBuilder);
-            searchResults.getIgnoredWords().forEach(str -> stringBuilder.append(str).append(WHITESPACE));
-            addNewLine(stringBuilder);
+        ignoredWordFilter(searchResults, stringBuilder);
+
+        buildResult(searchResults, stringBuilder);
+
+        if (!searchResults.getStoreList().isEmpty()) {
+            searchResults.getStoreList().forEach(
+                    stores -> stores.getDocInfos().forEach(
+                            docInfo -> docInfo.getPositions().size()));
         }
 
+        analyzeFrequency(stringBuilder, searchResults, false);
+
+        return stringBuilder.toString();
+    }
+
+    public static String parseAsAnd(SearchResults searchResults, String input) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        ignoredWordFilter(searchResults, stringBuilder);
+
+        if (stringBuilder.length() > 0) {
+            return ""; //If ignored words are there then and query as failed
+        }
+
+        buildResult(searchResults, stringBuilder);
+
+        if (!searchResults.getStoreList().isEmpty()) {
+            searchResults.getStoreList().forEach(
+                    stores -> stores.getDocInfos().forEach(
+                            docInfo -> docInfo.getPositions().size()));
+        }
+
+        analyzeFrequency(stringBuilder, searchResults, true);
+
+        return stringBuilder.toString();
+    }
+
+    private static void buildResult(SearchResults searchResults, StringBuilder stringBuilder) {
         if (!searchResults.getStoreList().isEmpty()) {
             stringBuilder.append("Found Words :");
             addWhitespace(stringBuilder);
@@ -69,19 +100,18 @@ public class IndexLookup {
                 addNewLine(stringBuilder);
             }
         }
-
-        if (!searchResults.getStoreList().isEmpty()) {
-            searchResults.getStoreList().forEach(
-                    stores -> stores.getDocInfos().forEach(
-                            docInfo -> docInfo.getPositions().size()));
-        }
-
-        analyzeFrequency(stringBuilder, searchResults);
-
-        return stringBuilder.toString();
     }
 
-    private static void analyzeFrequency(StringBuilder stringBuilder, SearchResults searchResults) {
+    private static void ignoredWordFilter(SearchResults searchResults, StringBuilder stringBuilder) {
+        if (!searchResults.getIgnoredWords().isEmpty()) {
+            stringBuilder.append("Ignored Words :");
+            addWhitespace(stringBuilder);
+            searchResults.getIgnoredWords().forEach(str -> stringBuilder.append(str).append(WHITESPACE));
+            addNewLine(stringBuilder);
+        }
+    }
+
+    private static void analyzeFrequency(StringBuilder stringBuilder, SearchResults searchResults, boolean isAnd) {
         Map<String, Integer> freq = new HashMap<>();
 
         for (Store store : searchResults.getStoreList()) {
@@ -102,6 +132,12 @@ public class IndexLookup {
         addNewLine(stringBuilder);
 
         for (Map.Entry<String, Integer> entry : freq.entrySet()) {
+
+            Double frequency = Double.parseDouble(Integer.toString(entry.getValue()))/Double.parseDouble(Integer.toString(totalCount));
+            if (isAnd && frequency != 1D) {
+                continue;
+            }
+
             stringBuilder.append(entry.getKey());
             addWhitespace(stringBuilder);
             stringBuilder.append(entry.getValue());

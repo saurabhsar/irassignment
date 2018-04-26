@@ -1,7 +1,6 @@
 package ir.file;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
