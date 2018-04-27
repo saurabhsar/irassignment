@@ -10,4 +10,5 @@ import java.util.Set;
 public class SearchResults {
     Set<Store> storeList;
     Set<String> ignoredWords;
+    Set<String> stopWords;
 }

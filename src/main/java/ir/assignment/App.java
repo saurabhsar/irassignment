@@ -49,7 +49,7 @@ public class App
             if (queryType.equalsIgnoreCase("1")) {
                 System.out.println("Enter search String");
                 String query = reader.readLine();
-                searchResults = IndexLookup.getData(query);
+                searchResults = IndexLookup.getData(query, false);
                 try {
                     System.out.println(parseSearchResults(searchResults));
                 } catch (Exception e) {
@@ -58,8 +58,8 @@ public class App
             } else if (queryType.equalsIgnoreCase("2")) {
                 System.out.println("Enter search String");
                 String query = reader.readLine();
-                searchResults = IndexLookup.getData(query);
-                System.out.println(parseAsAnd(searchResults, query));
+                searchResults = IndexLookup.getData(query, true);
+                System.out.println(parseAsAnd(searchResults));
             } else if (queryType.equalsIgnoreCase("3")) {
                 System.out.println(ObjectMapperFacade.getInstance().writeValueAsString(Index.documentMap));
             } else {

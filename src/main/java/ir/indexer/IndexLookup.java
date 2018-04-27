@@ -19,9 +19,10 @@ public class IndexLookup {
 
     private static String WHITESPACE = " ";
 
-    public static SearchResults getData(String str) {
+    public static SearchResults getData(String str, boolean and) {
         Set<Store> stores = new HashSet<>();
         Set<String> ignoredWords = new HashSet<>();
+        Set<String> stopWords = new HashSet<>();
 
         String[] tokens = Parser.tokenize(str, WHITESPACE);
 
@@ -34,20 +35,21 @@ public class IndexLookup {
                 stemmedString = token;
             }
 
-            if (StopWordFilter.filterStopWords(token)) {
+            if (!and && StopWordFilter.filterStopWords(stemmedString)) {
+                stopWords.add(token);
                 continue;
             }
 
             if (!documentMap.containsKey(stemmedString)) {
                 ignoredWords.add(token);
             } else {
-                stores.add(documentMap.get(token));
+                stores.add(documentMap.get(stemmedString));
             }
         }
 
         stores.remove(null);
 
-        return new SearchResults(stores, ignoredWords);
+        return new SearchResults(stores, ignoredWords, stopWords);
     }
 
     public static String parseSearchResults(SearchResults searchResults) {
@@ -64,11 +66,12 @@ public class IndexLookup {
         }
 
         analyzeFrequency(stringBuilder, searchResults, false);
+        handleStopWords(searchResults, stringBuilder);
 
         return stringBuilder.toString();
     }
 
-    public static String parseAsAnd(SearchResults searchResults, String input) {
+    public static String parseAsAnd(SearchResults searchResults) {
         StringBuilder stringBuilder = new StringBuilder();
 
         ignoredWordFilter(searchResults, stringBuilder);
@@ -77,8 +80,6 @@ public class IndexLookup {
             return ""; //If ignored words are there then and query as failed
         }
 
-        buildResult(searchResults, stringBuilder);
-
         if (!searchResults.getStoreList().isEmpty()) {
             searchResults.getStoreList().forEach(
                     stores -> stores.getDocInfos().forEach(
@@ -86,8 +87,21 @@ public class IndexLookup {
         }
 
         analyzeFrequency(stringBuilder, searchResults, true);
+        handleStopWords(searchResults, stringBuilder);
 
         return stringBuilder.toString();
+    }
+
+    private static void handleStopWords(SearchResults searchResults, StringBuilder stringBuilder) {
+        if (Config.getInstance().isStopWordFilterEnabled()) {
+            stringBuilder.append("Stop Words: ");
+
+            for (String stopWprd : searchResults.getStopWords()) {
+                stringBuilder.append(stopWprd);
+                stringBuilder.append(WHITESPACE);
+            }
+            addNewLine(stringBuilder);
+        }
     }
 
     private static void buildResult(SearchResults searchResults, StringBuilder stringBuilder) {
@@ -133,28 +147,24 @@ public class IndexLookup {
 
         int totalCount = searchResults.getStoreList().size() + searchResults.getIgnoredWords().size();
 
-        stringBuilder.append("Document Frequency:");
-        addNewLine(stringBuilder);
-
-        for (Map.Entry<String, Integer> entry : freq.entrySet()) {
-
-            Double frequency = Double.parseDouble(Integer.toString(entry.getValue()))/Double.parseDouble(Integer.toString(totalCount));
-            if (isAnd && frequency != 1D) {
-                continue;
-            }
-
-            stringBuilder.append(entry.getKey());
-            addWhitespace(stringBuilder);
-            stringBuilder.append(entry.getValue());
-            addWhitespace(stringBuilder);
-            stringBuilder.append("Out of");
-            addWhitespace(stringBuilder);
-            stringBuilder.append(totalCount);
-            addWhitespace(stringBuilder);
-            stringBuilder.append(totalCount).append(" occurances ");
-            addWhitespace(stringBuilder);
-            stringBuilder.append(Double.parseDouble(Integer.toString(entry.getValue()))/Double.parseDouble(Integer.toString(totalCount)));
+        if (totalCount > 0) {
+            stringBuilder.append("Document Frequency:");
             addNewLine(stringBuilder);
+
+            for (Map.Entry<String, Integer> entry : freq.entrySet()) {
+
+                Double frequency = Double.parseDouble(Integer.toString(entry.getValue())) / Double.parseDouble(Integer.toString(totalCount));
+                if (isAnd && frequency != 1D) {
+                    continue;
+                }
+
+                stringBuilder.append("Frequency: ");
+
+                stringBuilder.append(Double.parseDouble(Integer.toString(entry.getValue())) / Double.parseDouble(Integer.toString(totalCount)));
+                addNewLine(stringBuilder);
+            }
+        } else {
+            stringBuilder.append("No matching document found or only stopwords are queried for\n");
         }
     }
 
