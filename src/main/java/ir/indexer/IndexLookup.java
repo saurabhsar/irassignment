@@ -6,6 +6,7 @@ import ir.model.DocInfo;
 import ir.model.SearchResults;
 import ir.model.Store;
 import ir.preprocessor.Stemmer;
+import ir.preprocessor.StopWordFilter;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +32,10 @@ public class IndexLookup {
                 stemmedString = Stemmer.stem(token);
             } else {
                 stemmedString = token;
+            }
+
+            if (StopWordFilter.filterStopWords(token)) {
+                continue;
             }
 
             if (!documentMap.containsKey(stemmedString)) {

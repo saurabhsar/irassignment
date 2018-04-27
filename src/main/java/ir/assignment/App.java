@@ -1,6 +1,5 @@
 package ir.assignment;
 
-import ir.common.Config;
 import ir.common.ObjectMapperFacade;
 import ir.file.Parser;
 import ir.indexer.Index;
@@ -24,18 +23,23 @@ import static ir.indexer.IndexLookup.parseSearchResults;
  */
 public class App 
 {
+    private static String OS = System.getProperty("os.name").toLowerCase();
+
     public static void main( String[] args ) throws IOException {
-        File directory = new File(Config.getInstance().getResourcesDirectoryName());
+
+        File directory = new File(args[0]);
         SearchResults searchResults;
         for (File file : Objects.requireNonNull(directory.listFiles())){
+            System.out.println(file.getAbsolutePath());
             if (file.isFile()){
                 StopWordFilter.filterStopWords(
                     IndexCreator.createDocumentMap(
                             Parser.tokenize(
-                                    Parser.readDocxFile(Config.getInstance().getResourcesDirectoryName() + file.getName()),
+                                    Parser.readDocxFile(directory.getAbsolutePath() + getSeparatorBasedOnOs() + file.getName()),
                                     " "), (String) file.getName().subSequence(0, file.getName().length() -5 )));
             }
         }
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             System.out.println("Query Type:\n1. OR\n2. AND\n3. Print Index\n4.Exit\nPlease enter selection (1 or 2 or 3 or 4) : ");
@@ -62,6 +66,14 @@ public class App
                 System.out.println("Exiting ad input is neither 1 or 2 or 3");
                 System.exit(0);
             }
+        }
+    }
+
+    private static String getSeparatorBasedOnOs() {
+        if (OS.contains("win")) {
+            return "\\";
+        } else {
+            return "/";
         }
     }
 }
