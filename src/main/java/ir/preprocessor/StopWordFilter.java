@@ -27,7 +27,7 @@ public class StopWordFilter {
         }
     }
 
-    public static void filterStopWords(String[] searchQuery) {
-
+    public static boolean filterStopWords(String token) {
+        return Config.getInstance().isStopWordFilterEnabled() && Config.getInstance().getStopWords().contains(token);
     }
 }
